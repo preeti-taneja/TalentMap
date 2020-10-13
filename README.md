@@ -10,14 +10,7 @@ Talent shortage is a real issue in the current market. Almost three quarters (72
 
 
 ## Pipeline 
-
-
-
-
-## Requirements
-Python3
-AWS CLI
-boto3
+![](Images/TechStack.png)
 
 ## Architechture
 ### Spark
