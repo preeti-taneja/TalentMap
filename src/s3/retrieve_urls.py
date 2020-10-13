@@ -14,7 +14,7 @@ if __name__ == '__main__':
 	#html_page = urllib2.urlopen("https://archive.org/download/stackexchange")
 	#soup = BeautifulSoup(html_page)
 	for link in soup.findAll('a', attrs={'href': re.compile("^stackoverflow.*7z$")}):
-    	weblist.append('https://archive.org/download/stackexchange/'  + link.get('href'))
+    		weblist.append('https://archive.org/download/stackexchange/'  + link.get('href'))
     #print (link.get('href'))
     
 	with open('weblist.txt', 'w+') as filehandle:
