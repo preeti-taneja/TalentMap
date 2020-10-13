@@ -43,6 +43,18 @@ def regex_filter(x):
     
     return True 
 
+def parquet_parts(spark):
+    df_user_loc = spark.read.parquet("s3a://mapthetech/usersloc.parquet/")
+    no_partitions=df_user_loc.count()//15000
+    df.repartition(no_partitions).\
+            withColumn("partition_id",spark_partition_id()).\
+            groupBy(col("partition_id")).\
+            agg(count("*")).\
+            show()
+    df_user_loc.repartition(no_partitions).write.parquet("s3a://mapthetech/userfourteenparts/")
+    
+    return
+
 
 def read_xml_write_parquet(spark):
 
@@ -97,13 +109,13 @@ def read_xml_write_parquet(spark):
 
                 df_final.drop('user_location_trim','user_location_all_trim','length_user_loc','user_loc_int','special2')
 
-                #df_final.coalesce(4).write.parquet("s3a://mapthetech/Parquet/Users/users.parquet")
-                df_final.repartition(4,'user_location').write.parquet("s3a://mapthetech/Parquet/Users/userstestpart.parquet")
+                df_final.coalesce(4).write.parquet("s3a://mapthetech/Parquet/Users/users.parquet")
+                #df_final.repartition(4,'user_location').write.parquet("s3a://mapthetech/Parquet/Users/userstestpart.parquet")
 
                 df_loc_detail = df_final.select('user_location')
                 df_just_loc = df_loc_detail.dropDuplicates()
-                #df_just_loc.coalesce(3).write.parquet("s3a://mapthetech/usersloc.parquet")
-                df_just_loc.repartition(4,'user_location').write.parquet("s3a://mapthetech/userloctest1part.parquet")
+                df_just_loc.coalesce(3).write.parquet("s3a://mapthetech/usersloc.parquet")
+                #df_just_loc.repartition(4,'user_location').write.parquet("s3a://mapthetech/userloctest1part.parquet")
          
 
     return 
@@ -121,6 +133,7 @@ def main():
     """
     spark = create_spark_session()
     read_xml_write_parquet(spark)
+    parquet_parts(spark)
 
 
 
