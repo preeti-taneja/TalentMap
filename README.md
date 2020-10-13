@@ -38,11 +38,8 @@ For a given tag the dashboard displays:
 
 2) How the questions are evolving for a particular tag evolving over the years.
 
-## Methodology 
-
-
 ## DashBoard
-
+![](Images/dashboard.png)
 
 
 
