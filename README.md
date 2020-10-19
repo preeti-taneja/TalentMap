@@ -2,7 +2,7 @@
 Insight Data Engineering Fellowship Project San Francisco 2020C Session
 
 <a href="https://docs.google.com/presentation/d/1UsXbqKeRogs3hbmVc5Wjg2klLq2HJ3mYCNAJhjxRNrQ/edit#slide=id.g96abc2b0f8_0_58">Slides</a> 
-      <a href="https://youtu.be/aAGWPE6vkco">Demo</a> 
+<a href="https://youtu.be/aAGWPE6vkco">Demo</a> 
 
 
 ## Motivation 
@@ -51,13 +51,14 @@ download.sh: This script is redirect the archives in the urls of the txt file to
 extract_EC2_s3.sh: unzip the xml .7z compressed files and stores them on the S3 bucket. 
 
 ### Batch GeoCoding
-Batch GeoCoding:  Geocoding was done using Nominatim which has No limit with address geocoding.Nominatim doesn’t like bulk Geocoding and Repeated queries for the same address is blocked. To solve this issue , User address approx 4 million was cleaned using regex UDF and duplicate records were removed and the address's to be queried were reduced from 3 million rows to 215 K rows. Location were passed to API and GeoCoordinates were retrieved.
+Batch Geocoding is done using Nominatim which has No limit with address geocoding.Nominatim doesn’t like bulk Geocoding and Repeated queries for the same address is blocked. To solve this issue , User address approx 4 million was cleaned using regex UDF and duplicate records were removed and the address's to be queried were reduced from 3 million rows to 215 K rows. Location were passed to API and GeoCoordinates were retrieved.
 
 ### Tags DataWrangling
 It was required to count the answers each user is giving for a particular tag. But posts XML file (Data Dump file for Questions and Answers) , has tags only for the posttypeid = 1 . Posttypeid 1 refers to questions and 2 refers to answers. Answers were related to questions by parentid . Post dataframe was partitioned into 2 , one for questions and another for answers . Both dataframes were joined and tags were mapped to answers. Also Tags column required to be formatted so that user can be mapped to individual tags.
 
 Steps followed were
-1) The posts.parquet files are read in as a dataframe.
+
+1) The posts.xml files are read in as a dataframe.
 
 2) The questions are stored in a separate dataframe
 
