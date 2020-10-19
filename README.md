@@ -41,5 +41,46 @@ For a given tag the dashboard displays:
 ## DashBoard
 ![](Images/dashboard.png)
 
+## Methodology
+
+### Data Collection
+retrieve_urls.py: Uses the BeautifulSoup package to parse the urls on the stackexchange data dump to retrieve the urls of the .7z files of all the stackoverflow data.
+
+download.sh: This script is redirect the archives in the urls of the txt file to the EC2 instance 
+
+extract_EC2_s3.sh: unzip the xml .7z compressed files and stores them on the S3 bucket. 
+
+### Batch GeoCoding
+Batch GeoCoding:  Geocoding was done using Nominatim which has No limit with address geocoding.Nominatim doesn’t like bulk Geocoding and Repeated queries for the same address is blocked. To solve this issue , User address approx 4 million was cleaned using regex UDF and duplicate records were removed and the address's to be queried were reduced from 3 million rows to 215 K rows. Location were passed to API and GeoCoordinates were retrieved.
+
+### Tags DataWrangling
+It was required to count the answers each user is giving for a particular tag. But posts XML file (Data Dump file for Questions and Answers) , has tags only for the posttypeid = 1 . Posttypeid 1 refers to questions and 2 refers to answers. Answers were related to questions by parentid . Post dataframe was partitioned into 2 , one for questions and another for answers . Both dataframes were joined and tags were mapped to answers. Also Tags column required to be formatted so that user can be mapped to individual tags.
+
+Steps followed were
+1) The posts.parquet files are read in as a dataframe.
+
+2) The questions are stored in a separate dataframe
+
+   df_posts_answers = df_posts_answers.where((col("post_ans_type_id") == 2 ) & (col("post_ans_user_id").isNotNull()) ) 
+ 
+3) The answers are stored in a separate dataframe
+ 
+   df_posts_question = df_posts_question.where((col("post_tags").isNotNull() ) & (col("post_ques_type_id") == 1 ) )
+
+4)  Answers and questions were joined together
+   df_posts_ans_tags = df_posts_answers.join(df_posts_question,df_posts_question.post_ques_id == df_posts_answers.parent_question_id,"inner")
+5) df_posts_expl = df_posts.select(df_posts.post_ans_id,df_posts.post_ans_user_id,F.explode(df_posts.tag3).alias("tags_distinct"))
+    window = Window.partitionBy("post_ans_user_id","tags_distinct")
+    df_final =          df_posts_expl.select(df_posts_expl.post_ans_user_id,df_posts_expl.tags_distinct,F.count(df_posts_expl.post_ans_id).over(window).alias("total_count")).distinct()
+    
+### User Location mapped to Tags.
+Finally User along with location was mapped to the tags .
+
+
+    
+ 
+
+
+
 
 
